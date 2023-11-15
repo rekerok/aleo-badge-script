@@ -219,6 +219,7 @@ def main():
         print(f"Ошибка при создании директории: {e}")
     clear_folder(folder_path="projects")
     result = list()
+    counter_acc = 1
     with open(NAME_CSV, "r") as file:
         data = list(csv.DictReader(file, delimiter=","))
         for row in random.sample(data, len(data)):
@@ -243,6 +244,7 @@ def main():
                     branch = random.choice(BRANCH_NAMES)
                     app = random.choice(APPS)
                     random.shuffle(NAMES_REPO)
+                    logger.info(f"{counter_acc}/{len(data)}")
                     logger.info(f"ACC {user.login}")
                     dir = create_folder(f"projects/{user.login}")
                     if os.path.exists(dir):
@@ -361,11 +363,11 @@ def main():
                         }
                     )
 
-                    logger.info("------------------")
                 except Exception as error:
                     print(error)
                 os.chdir(BEGIN_FOLDER)
                 sleep_view(SLEEP)
+                logger.info("------------------")
 
     with open("result.csv", "w") as result_file:
         writter = csv.DictWriter(result_file, fieldnames=result[0].keys())
