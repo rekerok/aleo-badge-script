@@ -105,9 +105,26 @@ def start_command(command, input=None):
         return 1
 
 
-def aleo_account(private_key="x"):
+def aleo_account(private_key="x", email=None):
     if private_key.lower() != "x":
         return start_command(f"leo account import {private_key}")
+    else:
+        try:
+            args = f"leo account new"
+            result = subprocess.run(
+                args=args,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            with open("privates.txt", "a") as privates:
+                privates.write(email)
+                privates.write(result.stdout + "\n" * 3)
+            return result.returncode
+        except subprocess.CalledProcessError as e:
+            print(e)
+            return None
 
 
 def create_example_app(app):
@@ -256,7 +273,9 @@ def main():
                     os.chdir(dir)
                     logger.info(f"directory now is {os.getcwd()}")
 
-                    status_create_acc = aleo_account(row.get("ALEO PRIVATE"))
+                    status_create_acc = aleo_account(
+                        row.get("ALEO PRIVATE"), email=row.get("EMAIL")
+                    )
                     if status_create_acc == 0:
                         logger.success(
                             "leo account import command executed successfully"
